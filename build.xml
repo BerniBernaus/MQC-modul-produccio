@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<project name="EW_AppProduccio" default="all" basedir=".">
+	<!-- Propietats del guió -->
+	<property name="build" value="build"/>
+	<property name="lib" value="lib"/>
+	<property name="metadata" value="metadata"/>
+	<property name="dist" value="dist"/>
+	<property name="src" value="src"/>
+	<!-- propietats compilació i desplegament, cal canviar-ho en cada cas -->
+	<property name="war.file" value="EW_AppProduccio.war"/>
+	<property name="tomcat.home" value="C:\Program Files\Apache Software Foundation\Tomcat 7.0"/>
+	<property name="deploy" value="${tomcat.home}/webapps"/>
+	<property name="classpath" value="${lib}/servlet-api.jar;${lib}/xerxes.jar;$(lib)/activation.jar;${lib}/jcommon-1.0.13.jar;${lib}/sqljdbc.jar"/>
+
+	<target name="all" depends="init, compile, war, deploy"/>
+	
+	<!-- Inicialitzacions, creació/eliminació de directoris -->
+	<target name="clean">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+	<target name="init" depends="clean">
+		<tstamp/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}"/>
+	</target>
+
+	<!-- Compila el codi Java -->
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}" classpath="${classpath}"/>
+	</target>
+
+	<!-- Actualitza el fitxer war de la capa web i el crea si no existia -->
+	<target name="war" depends="compile">
+		<war destfile="${dist}/${war.file}" webxml="${metadata}/web.xml">
+			<classes dir="${build}"/>
+			<fileset dir="${src}/www"/>
+			<zipfileset dir="${metadata}/" prefix="META-INF">
+				<include name="context.xml"/>
+			</zipfileset>
+			<zipfileset dir="${metadata}/" prefix="WEB-INF">
+				<include name="*.properties"/>
+			</zipfileset>
+		</war>
+	</target>
+
+	<!-- Desplega el WAR al directori de desplegament del SERVLET CONTAINER -->
+	<target name="deploy" depends="war">
+		<copy file="${dist}/${war.file}" todir="${deploy}"/>
+	</target>	
+	
+	
+</project>

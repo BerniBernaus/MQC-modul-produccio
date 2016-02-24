@@ -1,0 +1,10 @@
+*.exe
+*.zip
+*.war
+.settings/
+bin/
+build/
+dist/
+lib/
+/.project
+
